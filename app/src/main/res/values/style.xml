@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="customTextViewLabelRegistrationStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="fontFamily">@font/poppins_medium</item>
+        <item name="android:textColor">@color/text_title</item>
+        <item name="android:textSize">@dimen/dim_12sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:layout_marginStart">@dimen/dim_16dp</item>
+        <item name="android:layout_marginTop">@dimen/dim_16dp</item>
+    </style>
+
+    <style name="customEditTextRegistrationStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:paddingStart">@dimen/dim_14dp</item>
+        <item name="android:paddingEnd">@dimen/dim_16dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/dim_48dp</item>
+        <item name="android:background">@drawable/selector_edittext</item>
+        <item name="android:layout_marginStart">@dimen/dim_16dp</item>
+        <item name="android:layout_marginEnd">@dimen/dim_16dp</item>
+        <item name="android:layout_marginTop">@dimen/dim_4dp</item>
+        <item name="android:drawablePadding">@dimen/dim_10dp</item>
+        <item name="android:paddingTop">@dimen/dim_14dp</item>
+        <item name="android:paddingBottom">@dimen/dim_14dp</item>
+        <item name="android:textSize">@dimen/dim_14sp</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="fontFamily">@font/poppins_medium</item>
+        <item name="android:textColor">@color/text_title</item>
+        <item name="android:maxLength">50</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textCursorDrawable">@drawable/dr_cursor</item>
+    </style>
+
+</resources>
