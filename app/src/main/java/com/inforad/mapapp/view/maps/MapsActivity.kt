@@ -76,7 +76,8 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener {
         val locations = listOf(
             Location("Local 1", -9.223612, -77.6855180),
             Location("Local 2", -9.224941, -77.688457),
-            Location("Local 3", -9.222564, -77.687502)
+            Location("Local 3", -9.222564, -77.687502),
+            Location("Local 3", -9.222627,-77.6830392)
             // Agrega más ubicaciones según sea necesario
         )
 
