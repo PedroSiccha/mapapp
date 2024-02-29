@@ -12,4 +12,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_update"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="@dimen/dim_16dp"
+        android:layout_marginTop="@dimen/dim_16dp"
+        android:layout_marginEnd="@dimen/dim_16dp"
+        android:layout_marginBottom="@dimen/dim_8dp"
+        android:backgroundTint="@color/blue_background"
+        android:gravity="bottom"
+        android:paddingStart="@dimen/dim_16dp"
+        android:paddingTop="@dimen/dim_12dp"
+        android:paddingEnd="@dimen/dim_24dp"
+        android:paddingBottom="@dimen/dim_12dp"
+        android:text="@string/update"
+        android:textSize="@dimen/dim_14sp"
+        app:cornerRadius="@dimen/dim_10dp"
+        app:iconGravity="end"
+        app:iconSize="@dimen/dim_16dp" />
+
 </RelativeLayout>
