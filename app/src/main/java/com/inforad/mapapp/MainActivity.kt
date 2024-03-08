@@ -10,6 +10,10 @@ import com.inforad.mapapp.model.LoginRequest
 import com.inforad.mapapp.model.LoginResponse
 import com.inforad.mapapp.service.ApiService
 import com.inforad.mapapp.view.maps.MapsActivity
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.Response as OkHttpResponse
+import okhttp3.Request
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -28,9 +32,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun validateLogin(email: String, password: String) {
+
+        val interceptor = object : Interceptor {
+            override fun intercept(chain: Interceptor.Chain): OkHttpResponse {
+                val request = chain.request()
+                // Aquí puedes imprimir información sobre la solicitud, como la URL
+                println("Solicitando a la URL: ${request.method()} ${request.url()}")
+                println("Body: ${request.body().to(email).to(password)}")
+                // Continúa con la cadena de interceptores
+                return chain.proceed(request)
+            }
+        }
+
+        val httpClient = OkHttpClient.Builder()
+        httpClient.addInterceptor(interceptor)
+
+//        val loggingInterceptor = HttpLoggingInterceptor()
+//        loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+//        httpClient.addInterceptor(loggingInterceptor)
+
+        val client = httpClient.build()
+
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.162.130:80/map_backend/api/")
+            .baseUrl("https://clincia.000webhostapp.com/api/")
             .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
             .build()
 
         val apiService = retrofit.create(ApiService::class.java)

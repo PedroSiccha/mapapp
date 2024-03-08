@@ -7,5 +7,10 @@ data class Location(
     @SerializedName("localname") val localname: String,
     @SerializedName("latitude") val latitude: Double,
     @SerializedName("longitude") val longitude: Double,
+    @SerializedName("description") val descripttion: String,
+    @SerializedName("email") val email: String,
+    @SerializedName("phone") val phone: String,
+    @SerializedName("category") val category: String,
+    @SerializedName("status") val status: String,
     @SerializedName("created_at") val createdAt: String
 )

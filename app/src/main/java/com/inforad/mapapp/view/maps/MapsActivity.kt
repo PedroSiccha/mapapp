@@ -4,15 +4,22 @@ import android.content.pm.PackageManager
 import android.location.GpsStatus
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import android.Manifest
+import android.app.AlertDialog
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import com.inforad.mapapp.R
 import com.inforad.mapapp.databinding.ActivityMapsBinding
 import com.inforad.mapapp.model.Location
 import com.inforad.mapapp.service.ApiService
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapListener
@@ -28,6 +35,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
 
 class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callback<List<Location>> {
     private lateinit var binding: ActivityMapsBinding
@@ -46,7 +54,6 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
             applicationContext,
             getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE)
         )
-        val token = intent.getStringExtra("token")
         mMap = binding.osmmap
         mMap.setTileSource(TileSourceFactory.MAPNIK)
         mMap.mapCenter
@@ -56,6 +63,22 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        getPosition()
+
+        getLocations()
+
+        binding.ivUpdateUbication.setOnClickListener {
+            getLocations()
+        }
+
+        binding.ivMiUbication.setOnClickListener {
+            getPosition()
+            getLocations()
+        }
+
+    }
+
+    private fun getPosition() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -65,52 +88,46 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
             )
             return
         }
-
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             location?.let {
                 val geoPoint = GeoPoint(it.latitude, it.longitude)
                 controller = mMap.controller
                 controller.setZoom(17.0)
                 controller.setCenter(geoPoint)
+
+//                val newMarker = Marker(mMap)
+////                newMarker.position = geoPoint
+//                newMarker.icon = resources.getDrawable(R.drawable.marker)
+//                mMap.overlays.add(newMarker)
+
                 mMyLocationOverlay = MyLocationNewOverlay(mMap)
                 mMap.overlays.add(mMyLocationOverlay)
                 mMyLocationOverlay.enableMyLocation()
                 mMyLocationOverlay.enableFollowLocation()
             }
         }
-
-        getLocations()
-
-        binding.btnUpdate.setOnClickListener {
-            getLocations()
-        }
-
-//        val locations = listOf(
-//            Location("Local 1", -9.223612, -77.6855180),
-//            Location("Local 2", -9.224941, -77.688457),
-//            Location("Local 3", -9.222564, -77.687502),
-//            Location("Local 3", -9.222627,-77.6830392)
-//            // Agrega más ubicaciones según sea necesario
-//        )
-
-//        for (location in locations) {
-//            val marker = Marker(mMap)
-//            marker.position = GeoPoint(location.latitude, location.longitude)
-//            marker.title = location.name
-//            mMap.overlays.add(marker)
-//        }
-
     }
 
     private fun getLocations() {
+        val interceptor = object : Interceptor {
+            override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
+                val request = chain.request()
+                println("Solicitando a la URL: ${request.method()} ${request.url()}")
+                return chain.proceed(request)
+            }
+        }
+
+        val httpClient = OkHttpClient.Builder()
+        httpClient.addInterceptor(interceptor)
+        val client = httpClient.build()
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.162.130:80/map_backend/api/")
+            .baseUrl("https://clincia.000webhostapp.com/api/")
             .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
             .build()
 
         val apiService = retrofit.create(ApiService::class.java)
 
-        // Aquí deberías recuperar el token de autenticación guardado previamente
         val token = intent.getStringExtra("token")
 
         val call = apiService.getLocations("Bearer $token")
@@ -125,29 +142,20 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, initialize location services
-                // You can also show a message to user that location permission is granted and reload the activity
                 recreate()
-            } else {
-                // Permission denied, handle this accordingly
-            }
+            } else {}
         }
     }
 
     override fun onScroll(event: ScrollEvent?): Boolean {
-        Log.e("TAG", "onCreate:la ${event?.source?.getMapCenter()?.latitude}")
-        Log.e("TAG", "onCreate:lo ${event?.source?.getMapCenter()?.longitude}")
         return true
     }
 
     override fun onZoom(event: ZoomEvent?): Boolean {
-        Log.e("TAG", "onZoom zoom level: ${event?.zoomLevel}   source:  ${event?.source}")
         return false
     }
 
-    override fun onGpsStatusChanged(event: Int) {
-
-    }
+    override fun onGpsStatusChanged(event: Int) {}
 
     data class Location(val name: String, val latitude: Double, val longitude: Double)
 
@@ -157,21 +165,100 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
     ) {
         if (response.isSuccessful) {
             val locations = response.body()
-            // Agregar marcadores para cada ubicación en el mapa
             locations?.forEach { location ->
-                Log.e("LOCATION", location.toString())
                 val marker = Marker(mMap)
                 marker.position = GeoPoint((location.latitude * 1E6).toInt(), (location.longitude*1E6).toInt())
-                marker.title = location.localname
+                marker.title = "${location.localname}"
+                marker.subDescription = "Descripcion: ${location.descripttion}\nTelefono: ${location.phone}\nEmail: ${location.email}\nCategoria: ${location.category}"
+                var txtEstado = ""
+                when (location.status) {
+                    "PENDIENTE" -> {
+                        marker.icon = resources.getDrawable(R.drawable.markerlocal)
+                        txtEstado = "Mis Pedidos"
+                    }
+                    "ENTREGADO" -> {
+                        marker.icon = resources.getDrawable(R.drawable.ubicacionentregado)
+                        txtEstado = "Crear Pedidos"
+                    }
+                    "SIN PEDIDO" -> {
+                        marker.icon = resources.getDrawable(R.drawable.sinpedido)
+                        txtEstado = "Crear Pedidos"
+                    }
+                    else -> marker.icon = resources.getDrawable(R.drawable.markerlocal)
+                }
+
+
+                marker.setOnMarkerClickListener { marker, mapView ->
+                    val dialogView = LayoutInflater.from(this@MapsActivity).inflate(R.layout.custom_marker_dialog, null)
+                    val dialog = AlertDialog.Builder(this@MapsActivity)
+                        .setView(dialogView)
+                        .create()
+                    val markerPoint = mapView.projection.toPixels(marker.position, null)
+                    val offsetX = -(dialogView.width / 2)
+                    val offsetY = -(dialogView.height + marker.icon.getIntrinsicHeight())
+                    dialog.window?.attributes?.apply {
+                        x = markerPoint.x + offsetX
+                        y = markerPoint.y + offsetY
+                        gravity = Gravity.TOP or Gravity.START
+                    }
+
+                    dialogView.findViewById<TextView>(R.id.markerTitle).text = location.localname
+                    dialogView.findViewById<TextView>(R.id.markerDescription).text = location.descripttion
+                    dialogView.findViewById<TextView>(R.id.markerEmail).text = location.email
+                    dialogView.findViewById<TextView>(R.id.markerPhone).text = location.phone
+                    dialogView.findViewById<TextView>(R.id.markerCategory).text = location.category
+                    dialogView.findViewById<TextView>(R.id.markerStatus).text = location.status
+                    dialogView.findViewById<TextView>(R.id.buttonVerMas).setText(txtEstado)
+                    dialogView.findViewById<ImageView>(R.id.ivClose).setOnClickListener {
+                        dialog.dismiss()
+                    }
+                    dialogView.findViewById<Button>(R.id.buttonVerMas).setOnClickListener {
+                        dialog.dismiss()
+                    }
+
+                    if (!isFinishing) {
+                        dialog.show()
+                    }
+                    true
+
+                }
                 mMap.overlays.add(marker)
+
             }
-        } else {
-            // Manejar errores de la respuesta
+        } else {}
+    }
+
+    val markerListener = object : Marker.OnMarkerClickListener {
+        override fun onMarkerClick(marker: Marker?, mapView: MapView?): Boolean {
+            marker?.let {
+                // Crear un cuadro de diálogo personalizado
+                val dialogView = LayoutInflater.from(applicationContext).inflate(R.layout.custom_marker_dialog, null)
+                val dialog = AlertDialog.Builder(applicationContext)
+                    .setView(dialogView)
+                    .create()
+
+                // Configurar título y descripción
+                dialogView.findViewById<TextView>(R.id.markerTitle).text = marker.title
+                dialogView.findViewById<TextView>(R.id.markerDescription).text = marker.snippet
+
+                // Configurar botón "Ver más"
+                dialogView.findViewById<Button>(R.id.buttonVerMas).setOnClickListener {
+                    // Aquí puedes manejar la acción cuando se hace clic en el botón "Ver más"
+                    // Por ejemplo, abrir una nueva actividad o mostrar más detalles en otro diálogo
+                    // Puedes acceder a los detalles del marcador desde 'marker' (como title, snippet, etc.)
+                    //showMoreDetailsDialog(marker)
+                    dialog.dismiss() // Cerrar el cuadro de diálogo actual
+                }
+
+                // Mostrar el cuadro de diálogo personalizado
+                dialog.show()
+            }
+
+            // Devolver true para indicar que se ha manejado el clic en el marcador
+            return true
         }
     }
 
-    override fun onFailure(call: Call<List<com.inforad.mapapp.model.Location>>, t: Throwable) {
-        Log.e("Error: ", t.message.toString())
-    }
+    override fun onFailure(call: Call<List<com.inforad.mapapp.model.Location>>, t: Throwable) {}
 
 }
