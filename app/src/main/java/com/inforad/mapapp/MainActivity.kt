@@ -4,6 +4,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import com.inforad.mapapp.databinding.ActivityMainBinding
 import com.inforad.mapapp.model.LoginRequest
@@ -26,13 +29,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         binding.btnNext.setOnClickListener {
             validateLogin(binding.etEmail.text.toString().trim(), binding.etPassword.text.toString().trim())
         }
     }
 
     private fun validateLogin(email: String, password: String) {
-
+        val progressBar = LayoutInflater.from(this).inflate(R.layout.custom_progressbar, null) as ProgressBar
+        progressBar.visibility = View.VISIBLE
         val interceptor = object : Interceptor {
             override fun intercept(chain: Interceptor.Chain): OkHttpResponse {
                 val request = chain.request()
@@ -46,10 +51,6 @@ class MainActivity : AppCompatActivity() {
 
         val httpClient = OkHttpClient.Builder()
         httpClient.addInterceptor(interceptor)
-
-//        val loggingInterceptor = HttpLoggingInterceptor()
-//        loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-//        httpClient.addInterceptor(loggingInterceptor)
 
         val client = httpClient.build()
 
@@ -65,20 +66,20 @@ class MainActivity : AppCompatActivity() {
 
         call.enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                progressBar.visibility = View.GONE
                 if (response.isSuccessful) {
                     val token = response.body()?.token
                     Toast.makeText(applicationContext, "Bienvenido", Toast.LENGTH_LONG).show()
                     val intent = Intent(this@MainActivity, MapsActivity::class.java)
                     intent.putExtra("token", token)
                     startActivity(intent)
-                    // Aquí puedes guardar el token en SharedPreferences u otro lugar para usarlo posteriormente
                 } else {
-                    //textViewLocations.text = "Error al iniciar sesión."
                     Toast.makeText(applicationContext, "Error al iniciar sesión.", Toast.LENGTH_LONG).show()
                 }
             }
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                progressBar.visibility = View.GONE
                 //textViewLocations.text = "Error de red: " + t.message
                 Log.e("Error de red: ", t.message.toString())
                 Toast.makeText(applicationContext, "Error de red: " + t.message, Toast.LENGTH_LONG).show()

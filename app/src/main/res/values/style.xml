@@ -33,4 +33,8 @@
         <item name="android:textCursorDrawable">@drawable/dr_cursor</item>
     </style>
 
+    <style name="ShapeAppearanceOverlay.App.Corner20p" parent="">
+        <item name="cornerSize">20%</item>
+    </style>
+
 </resources>

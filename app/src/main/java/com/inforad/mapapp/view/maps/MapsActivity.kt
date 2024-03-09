@@ -11,8 +11,10 @@ import android.Manifest
 import android.app.AlertDialog
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import com.inforad.mapapp.R
 import com.inforad.mapapp.databinding.ActivityMapsBinding
@@ -109,6 +111,8 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
     }
 
     private fun getLocations() {
+        val progressBar = LayoutInflater.from(this).inflate(R.layout.custom_progressbar, null) as ProgressBar
+        progressBar.visibility = View.VISIBLE
         val interceptor = object : Interceptor {
             override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
                 val request = chain.request()
@@ -132,6 +136,7 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
 
         val call = apiService.getLocations("Bearer $token")
         call.enqueue(this)
+        progressBar.visibility = View.GONE
     }
 
     override fun onRequestPermissionsResult(
@@ -213,6 +218,13 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
                         dialog.dismiss()
                     }
                     dialogView.findViewById<Button>(R.id.buttonVerMas).setOnClickListener {
+                        if (txtEstado == "Mis Pedidos") {
+                            viewOrder()
+                        } else if (txtEstado == "Crear Pedidos") {
+                            createOrder()
+                        } else {
+                            createOrder()
+                        }
                         dialog.dismiss()
                     }
 
@@ -228,34 +240,24 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         } else {}
     }
 
-    val markerListener = object : Marker.OnMarkerClickListener {
-        override fun onMarkerClick(marker: Marker?, mapView: MapView?): Boolean {
-            marker?.let {
-                // Crear un cuadro de diálogo personalizado
-                val dialogView = LayoutInflater.from(applicationContext).inflate(R.layout.custom_marker_dialog, null)
-                val dialog = AlertDialog.Builder(applicationContext)
-                    .setView(dialogView)
-                    .create()
+    private fun createOrder() {
+        val dialogCreatewOrder = LayoutInflater.from(this@MapsActivity).inflate(R.layout.custom_create_order, null)
+        val dialog = AlertDialog.Builder(this@MapsActivity)
+            .setView(dialogCreatewOrder)
+            .create()
+        if (!isFinishing) {
+            dialog.show()
+        }
+    }
 
-                // Configurar título y descripción
-                dialogView.findViewById<TextView>(R.id.markerTitle).text = marker.title
-                dialogView.findViewById<TextView>(R.id.markerDescription).text = marker.snippet
+    private fun viewOrder() {
+        val dialogViewOrders = LayoutInflater.from(this@MapsActivity).inflate(R.layout.custom_view_order, null)
+        val dialog = AlertDialog.Builder(this@MapsActivity)
+            .setView(dialogViewOrders)
+            .create()
 
-                // Configurar botón "Ver más"
-                dialogView.findViewById<Button>(R.id.buttonVerMas).setOnClickListener {
-                    // Aquí puedes manejar la acción cuando se hace clic en el botón "Ver más"
-                    // Por ejemplo, abrir una nueva actividad o mostrar más detalles en otro diálogo
-                    // Puedes acceder a los detalles del marcador desde 'marker' (como title, snippet, etc.)
-                    //showMoreDetailsDialog(marker)
-                    dialog.dismiss() // Cerrar el cuadro de diálogo actual
-                }
-
-                // Mostrar el cuadro de diálogo personalizado
-                dialog.show()
-            }
-
-            // Devolver true para indicar que se ha manejado el clic en el marcador
-            return true
+        if (!isFinishing) {
+            dialog.show()
         }
     }
 
