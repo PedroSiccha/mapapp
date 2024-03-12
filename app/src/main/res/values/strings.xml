@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">mapapp</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="welcome">Bienvenido</string>
     <string name="log_in">Acceso</string>
     <string name="email_username">Usuario/Correo</string>

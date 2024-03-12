@@ -25,19 +25,21 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var progressBar: ProgressBar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        progressBar = binding.progressBar2
+        progressBar.visibility = View.GONE
 
         binding.btnNext.setOnClickListener {
+            progressBar.visibility = View.VISIBLE
             validateLogin(binding.etEmail.text.toString().trim(), binding.etPassword.text.toString().trim())
         }
     }
 
     private fun validateLogin(email: String, password: String) {
-        val progressBar = LayoutInflater.from(this).inflate(R.layout.custom_progressbar, null) as ProgressBar
-        progressBar.visibility = View.VISIBLE
         val interceptor = object : Interceptor {
             override fun intercept(chain: Interceptor.Chain): OkHttpResponse {
                 val request = chain.request()
@@ -74,6 +76,7 @@ class MainActivity : AppCompatActivity() {
                     intent.putExtra("token", token)
                     startActivity(intent)
                 } else {
+                    progressBar.visibility = View.GONE
                     Toast.makeText(applicationContext, "Error al iniciar sesión.", Toast.LENGTH_LONG).show()
                 }
             }

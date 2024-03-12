@@ -3,6 +3,11 @@
     <style name="Base.Theme.Mapapp" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
+        
     </style>
 
     <style name="Theme.Mapapp" parent="Base.Theme.Mapapp" />

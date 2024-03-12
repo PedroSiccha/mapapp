@@ -16,6 +16,11 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
 import com.inforad.mapapp.R
 import com.inforad.mapapp.databinding.ActivityMapsBinding
 import com.inforad.mapapp.model.Location
@@ -44,14 +49,20 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
     lateinit var mMap: MapView
     lateinit var controller: IMapController
     lateinit var mMyLocationOverlay: MyLocationNewOverlay
+    lateinit var progressBar: ProgressBar
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+    private lateinit var toggle: ActionBarDrawerToggle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        progressBar = binding.progressBar
+        viewMenuLateral()
         Configuration.getInstance().load(
             applicationContext,
             getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE)
@@ -61,6 +72,7 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         mMap.mapCenter
         mMap.setMultiTouchControls(true)
         mMap.addMapListener(this)
+        progressBar.visibility = View.VISIBLE
 
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -70,14 +82,55 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         getLocations()
 
         binding.ivUpdateUbication.setOnClickListener {
+            progressBar.visibility = View.VISIBLE
             getLocations()
         }
 
         binding.ivMiUbication.setOnClickListener {
+            progressBar.visibility = View.VISIBLE
             getPosition()
             getLocations()
         }
 
+    }
+
+    private fun viewMenuLateral() {
+        drawerLayout = binding.drawerLayout
+
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        navigationView = binding.navView
+
+        toggle = ActionBarDrawerToggle(
+            this,
+            drawerLayout,
+            binding.toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toggle)
+        val navigationView = binding.navView
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_home -> {
+                    Toast.makeText(applicationContext, "Home clicked", Toast.LENGTH_SHORT).show()
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setNavigationItemSelectedListener true
+
+                    true
+                }
+
+                R.id.nav_ventas -> {
+                    Toast.makeText(applicationContext, "Ventas clicked", Toast.LENGTH_SHORT).show()
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+
+                else -> false
+            }
+            true
+        }
     }
 
     private fun getPosition() {
@@ -106,13 +159,12 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
                 mMap.overlays.add(mMyLocationOverlay)
                 mMyLocationOverlay.enableMyLocation()
                 mMyLocationOverlay.enableFollowLocation()
+                progressBar.visibility = View.GONE
             }
         }
     }
 
     private fun getLocations() {
-        val progressBar = LayoutInflater.from(this).inflate(R.layout.custom_progressbar, null) as ProgressBar
-        progressBar.visibility = View.VISIBLE
         val interceptor = object : Interceptor {
             override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
                 val request = chain.request()
@@ -136,7 +188,7 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
 
         val call = apiService.getLocations("Bearer $token")
         call.enqueue(this)
-        progressBar.visibility = View.GONE
+
     }
 
     override fun onRequestPermissionsResult(
@@ -178,18 +230,18 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
                 var txtEstado = ""
                 when (location.status) {
                     "PENDIENTE" -> {
-                        marker.icon = resources.getDrawable(R.drawable.markerlocal)
+                        marker.icon = resources.getDrawable(R.drawable.location)
                         txtEstado = "Mis Pedidos"
                     }
                     "ENTREGADO" -> {
-                        marker.icon = resources.getDrawable(R.drawable.ubicacionentregado)
+                        marker.icon = resources.getDrawable(R.drawable.alert_location)
                         txtEstado = "Crear Pedidos"
                     }
                     "SIN PEDIDO" -> {
-                        marker.icon = resources.getDrawable(R.drawable.sinpedido)
+                        marker.icon = resources.getDrawable(R.drawable.alert_location)
                         txtEstado = "Crear Pedidos"
                     }
-                    else -> marker.icon = resources.getDrawable(R.drawable.markerlocal)
+                    else -> marker.icon = resources.getDrawable(R.drawable.location)
                 }
 
 
@@ -237,6 +289,7 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
                 mMap.overlays.add(marker)
 
             }
+            progressBar.visibility = View.GONE
         } else {}
     }
 
