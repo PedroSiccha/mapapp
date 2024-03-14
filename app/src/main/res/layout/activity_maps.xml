@@ -15,21 +15,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:layout_width="match_parent"
-            android:gravity="bottom"
-            android:background="@color/white"
-            android:layout_height="85dp">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_gravity="bottom"
-                android:background="@color/white"
-                app:layout_scrollFlags="scroll|enterAlways"/>
 
-        </com.google.android.material.appbar.AppBarLayout>
+<!--        <com.google.android.material.appbar.AppBarLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:gravity="bottom"-->
+<!--            android:background="@color/white"-->
+<!--            android:layout_height="85dp">-->
+
+<!--            <androidx.appcompat.widget.Toolbar-->
+<!--                android:id="@+id/toolbar"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="?attr/actionBarSize"-->
+<!--                android:layout_gravity="bottom"-->
+<!--                android:background="@color/white"-->
+<!--                app:layout_scrollFlags="scroll|enterAlways"/>-->
+
+<!--        </com.google.android.material.appbar.AppBarLayout>-->
 
         <!-- Add your app's content here -->
 
@@ -43,16 +45,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyle"
+            <ImageButton
+                android:id="@+id/btnMenu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                app:layout_constraintTop_toTopOf="@id/osmmap"
-                app:layout_constraintBottom_toBottomOf="@id/osmmap"
-                app:layout_constraintStart_toStartOf="@id/osmmap"
-                app:layout_constraintEnd_toEndOf="@id/osmmap"/>
+                android:src="@drawable/menu"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="32dp"
+                android:layout_marginStart="5dp"
+                app:tint="@color/blue_background" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
@@ -60,8 +62,8 @@
                 android:background="@color/blue_background"
                 android:backgroundTint="#8F363637"
                 android:layout_marginEnd="5dp"
+                android:layout_marginTop="32dp"
                 app:cardCornerRadius="@dimen/dim_8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/osmmap"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 

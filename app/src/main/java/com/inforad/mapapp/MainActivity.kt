@@ -1,5 +1,6 @@
 package com.inforad.mapapp
 
+import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -25,16 +26,18 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var progressBar: ProgressBar
+    private lateinit var progressBar: AlertDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        progressBar = binding.progressBar2
-        progressBar.visibility = View.GONE
+
+        progressBar = createProgressDialog()
+
+        viewProgress(false)
 
         binding.btnNext.setOnClickListener {
-            progressBar.visibility = View.VISIBLE
+            viewProgress(true)
             validateLogin(binding.etEmail.text.toString().trim(), binding.etPassword.text.toString().trim())
         }
     }
@@ -68,7 +71,7 @@ class MainActivity : AppCompatActivity() {
 
         call.enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                progressBar.visibility = View.GONE
+                viewProgress(false)
                 if (response.isSuccessful) {
                     val token = response.body()?.token
                     Toast.makeText(applicationContext, "Bienvenido", Toast.LENGTH_LONG).show()
@@ -76,17 +79,33 @@ class MainActivity : AppCompatActivity() {
                     intent.putExtra("token", token)
                     startActivity(intent)
                 } else {
-                    progressBar.visibility = View.GONE
+                    viewProgress(false)
                     Toast.makeText(applicationContext, "Error al iniciar sesión.", Toast.LENGTH_LONG).show()
                 }
             }
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                progressBar.visibility = View.GONE
+                viewProgress(false)
                 //textViewLocations.text = "Error de red: " + t.message
                 Log.e("Error de red: ", t.message.toString())
                 Toast.makeText(applicationContext, "Error de red: " + t.message, Toast.LENGTH_LONG).show()
             }
         })
     }
+
+    private fun viewProgress(status: Boolean) {
+        if (status) {
+            progressBar.show()
+        } else {
+            progressBar.dismiss()
+        }
+    }
+
+    private fun createProgressDialog(): AlertDialog {
+        val dialogViewOrders = LayoutInflater.from(this).inflate(R.layout.custom_progress_dialog, null)
+        return AlertDialog.Builder(this)
+            .setView(dialogViewOrders)
+            .create()
+    }
+
 }

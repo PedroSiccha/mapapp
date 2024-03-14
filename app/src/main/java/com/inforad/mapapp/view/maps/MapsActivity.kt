@@ -12,9 +12,11 @@ import android.app.AlertDialog
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -49,8 +51,10 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
     lateinit var mMap: MapView
     lateinit var controller: IMapController
     lateinit var mMyLocationOverlay: MyLocationNewOverlay
-    lateinit var progressBar: ProgressBar
+    lateinit var progressBar: AlertDialog
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    val options = arrayOf("VENTA", "NO VENTA")
+
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
@@ -61,8 +65,11 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        progressBar = binding.progressBar
+        progressBar = createProgressDialog()
         viewMenuLateral()
+        binding.btnMenu.setOnClickListener {
+            binding.drawerLayout.openDrawer(GravityCompat.START)
+        }
         Configuration.getInstance().load(
             applicationContext,
             getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE)
@@ -72,7 +79,7 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         mMap.mapCenter
         mMap.setMultiTouchControls(true)
         mMap.addMapListener(this)
-        progressBar.visibility = View.VISIBLE
+        viewProgress(status = true)
 
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -82,12 +89,12 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         getLocations()
 
         binding.ivUpdateUbication.setOnClickListener {
-            progressBar.visibility = View.VISIBLE
+            viewProgress(status = true)
             getLocations()
         }
 
         binding.ivMiUbication.setOnClickListener {
-            progressBar.visibility = View.VISIBLE
+            viewProgress(status = true)
             getPosition()
             getLocations()
         }
@@ -97,19 +104,19 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
     private fun viewMenuLateral() {
         drawerLayout = binding.drawerLayout
 
-        setSupportActionBar(binding.toolbar)
+//        setSupportActionBar(binding.btnMenu)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         navigationView = binding.navView
 
-        toggle = ActionBarDrawerToggle(
-            this,
-            drawerLayout,
-            binding.toolbar,
-            R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
-        )
-        drawerLayout.addDrawerListener(toggle)
+//        toggle = ActionBarDrawerToggle(
+//            this,
+//            drawerLayout,
+//            binding.toolbar,
+//            R.string.navigation_drawer_open,
+//            R.string.navigation_drawer_close
+//        )
+//        drawerLayout.addDrawerListener(toggle)
         val navigationView = binding.navView
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -159,7 +166,7 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
                 mMap.overlays.add(mMyLocationOverlay)
                 mMyLocationOverlay.enableMyLocation()
                 mMyLocationOverlay.enableFollowLocation()
-                progressBar.visibility = View.GONE
+                viewProgress(status = false)
             }
         }
     }
@@ -231,15 +238,15 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
                 when (location.status) {
                     "PENDIENTE" -> {
                         marker.icon = resources.getDrawable(R.drawable.location)
-                        txtEstado = "Mis Pedidos"
+                        txtEstado = "OK"
                     }
                     "ENTREGADO" -> {
                         marker.icon = resources.getDrawable(R.drawable.alert_location)
-                        txtEstado = "Crear Pedidos"
+                        txtEstado = "OK"
                     }
                     "SIN PEDIDO" -> {
                         marker.icon = resources.getDrawable(R.drawable.alert_location)
-                        txtEstado = "Crear Pedidos"
+                        txtEstado = "OK"
                     }
                     else -> marker.icon = resources.getDrawable(R.drawable.location)
                 }
@@ -258,6 +265,8 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
                         y = markerPoint.y + offsetY
                         gravity = Gravity.TOP or Gravity.START
                     }
+
+                    createSelect(dialogView.findViewById<Spinner>(R.id.spinner))
 
                     dialogView.findViewById<TextView>(R.id.markerTitle).text = location.localname
                     dialogView.findViewById<TextView>(R.id.markerDescription).text = location.descripttion
@@ -289,8 +298,23 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
                 mMap.overlays.add(marker)
 
             }
-            progressBar.visibility = View.GONE
+
+            viewProgress(status = false)
         } else {}
+    }
+
+    private fun createSelect(spinner: Spinner?) {
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner?.adapter = adapter
+
+        // Manejar la selección del usuario
+//        spinner?.setOnItemSelectedListener { parent, view, position, id ->
+//            val selectedOption = parent.getItemAtPosition(position).toString()
+//            // Hacer lo que necesites con la opción seleccionada
+//            // Por ejemplo, mostrarla en un Toast
+//            // Toast.makeText(this, "Seleccionaste: $selectedOption", Toast.LENGTH_SHORT).show()
+//        }
     }
 
     private fun createOrder() {
@@ -312,6 +336,23 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         if (!isFinishing) {
             dialog.show()
         }
+    }
+
+    private fun viewProgress(status: Boolean) {
+
+        if (status) {
+            progressBar.show()
+        }
+        if (!status) {
+            progressBar.dismiss()
+        }
+    }
+
+    private fun createProgressDialog(): AlertDialog {
+        val dialogViewOrders = LayoutInflater.from(this).inflate(R.layout.custom_progress_dialog, null)
+        return AlertDialog.Builder(this)
+            .setView(dialogViewOrders)
+            .create()
     }
 
     override fun onFailure(call: Call<List<com.inforad.mapapp.model.Location>>, t: Throwable) {}
