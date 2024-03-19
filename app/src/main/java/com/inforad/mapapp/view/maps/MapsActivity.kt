@@ -9,6 +9,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import android.Manifest
 import android.app.AlertDialog
+import android.content.Intent
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -22,11 +23,13 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
 import com.inforad.mapapp.R
 import com.inforad.mapapp.databinding.ActivityMapsBinding
 import com.inforad.mapapp.model.Location
 import com.inforad.mapapp.service.ApiService
+import com.inforad.mapapp.view.orders.create.CreateOrder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import org.osmdroid.api.IMapController
@@ -52,6 +55,7 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
     lateinit var controller: IMapController
     lateinit var mMyLocationOverlay: MyLocationNewOverlay
     lateinit var progressBar: AlertDialog
+    lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     val options = arrayOf("VENTA", "NO VENTA")
 
@@ -66,7 +70,9 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         progressBar = createProgressDialog()
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.sheet)
         viewMenuLateral()
+        viewBottomSheet()
         binding.btnMenu.setOnClickListener {
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
@@ -101,22 +107,18 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
 
     }
 
+    private fun viewBottomSheet() {
+        bottomSheetBehavior.peekHeight = 0
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+    }
+
     private fun viewMenuLateral() {
         drawerLayout = binding.drawerLayout
 
-//        setSupportActionBar(binding.btnMenu)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         navigationView = binding.navView
 
-//        toggle = ActionBarDrawerToggle(
-//            this,
-//            drawerLayout,
-//            binding.toolbar,
-//            R.string.navigation_drawer_open,
-//            R.string.navigation_drawer_close
-//        )
-//        drawerLayout.addDrawerListener(toggle)
         val navigationView = binding.navView
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -129,7 +131,9 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
                 }
 
                 R.id.nav_ventas -> {
-                    Toast.makeText(applicationContext, "Ventas clicked", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(applicationContext, "Ventas clicked", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, CreateOrder::class.java)
+                    startActivity(intent)
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
@@ -156,11 +160,6 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
                 controller = mMap.controller
                 controller.setZoom(17.0)
                 controller.setCenter(geoPoint)
-
-//                val newMarker = Marker(mMap)
-////                newMarker.position = geoPoint
-//                newMarker.icon = resources.getDrawable(R.drawable.marker)
-//                mMap.overlays.add(newMarker)
 
                 mMyLocationOverlay = MyLocationNewOverlay(mMap)
                 mMap.overlays.add(mMyLocationOverlay)
@@ -253,52 +252,22 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
 
 
                 marker.setOnMarkerClickListener { marker, mapView ->
-                    val dialogView = LayoutInflater.from(this@MapsActivity).inflate(R.layout.custom_marker_dialog, null)
-                    val dialog = AlertDialog.Builder(this@MapsActivity)
-                        .setView(dialogView)
-                        .create()
-                    val markerPoint = mapView.projection.toPixels(marker.position, null)
-                    val offsetX = -(dialogView.width / 2)
-                    val offsetY = -(dialogView.height + marker.icon.getIntrinsicHeight())
-                    dialog.window?.attributes?.apply {
-                        x = markerPoint.x + offsetX
-                        y = markerPoint.y + offsetY
-                        gravity = Gravity.TOP or Gravity.START
-                    }
-
-                    createSelect(dialogView.findViewById<Spinner>(R.id.spinner))
-
-                    dialogView.findViewById<TextView>(R.id.markerTitle).text = location.localname
-                    dialogView.findViewById<TextView>(R.id.markerDescription).text = location.descripttion
-                    dialogView.findViewById<TextView>(R.id.markerEmail).text = location.email
-                    dialogView.findViewById<TextView>(R.id.markerPhone).text = location.phone
-                    dialogView.findViewById<TextView>(R.id.markerCategory).text = location.category
-                    dialogView.findViewById<TextView>(R.id.markerStatus).text = location.status
-                    dialogView.findViewById<TextView>(R.id.buttonVerMas).setText(txtEstado)
-                    dialogView.findViewById<ImageView>(R.id.ivClose).setOnClickListener {
-                        dialog.dismiss()
-                    }
-                    dialogView.findViewById<Button>(R.id.buttonVerMas).setOnClickListener {
-                        if (txtEstado == "Mis Pedidos") {
-                            viewOrder()
-                        } else if (txtEstado == "Crear Pedidos") {
-                            createOrder()
-                        } else {
-                            createOrder()
-                        }
-                        dialog.dismiss()
-                    }
-
-                    if (!isFinishing) {
-                        dialog.show()
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    createSelect(binding.spinner)
+                    binding.markerTitle.text = location.localname
+                    binding.markerDescription.text = location.descripttion
+                    binding.markerEmail.text = location.email
+                    binding.markerPhone.text = location.phone
+                    binding.markerCategory.text = location.category
+                    binding.markerStatus.text = location.status
+                    binding.buttonVerMas.text = txtEstado
+                    binding.buttonVerMas.setOnClickListener {
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                     }
                     true
-
                 }
                 mMap.overlays.add(marker)
-
             }
-
             viewProgress(status = false)
         } else {}
     }
