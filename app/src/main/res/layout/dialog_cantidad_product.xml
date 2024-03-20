@@ -128,6 +128,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
+                <TextView
+                    android:id="@+id/et_data"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="S/.  1.375 UND 1"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toBottomOf="@id/et_payment_amount"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvBoni"
                     android:layout_width="match_parent"
@@ -138,7 +151,7 @@
                     android:text="SIN BONI."
                     android:textColor="@color/green_background"
                     android:textSize="11sp"
-                    app:layout_constraintTop_toBottomOf="@id/et_payment_amount"
+                    app:layout_constraintTop_toBottomOf="@id/et_data"
                     app:layout_constraintBottom_toTopOf="@id/buttonConfirm"/>
 
                 <Button

@@ -12,6 +12,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -23,6 +24,7 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
 import com.inforad.mapapp.R
@@ -49,7 +51,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callback<List<Location>> {
+class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callback<List<Location>>, BottomNavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding: ActivityMapsBinding
     lateinit var mMap: MapView
     lateinit var controller: IMapController
@@ -73,6 +75,8 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         bottomSheetBehavior = BottomSheetBehavior.from(binding.sheet)
         viewMenuLateral()
         viewBottomSheet()
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        bottomNavigationView.setOnNavigationItemSelectedListener(this)
         binding.btnMenu.setOnClickListener {
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
@@ -325,5 +329,36 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
     }
 
     override fun onFailure(call: Call<List<com.inforad.mapapp.model.Location>>, t: Throwable) {}
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.home -> {
+                // Lógica para manejar el clic en "Inicio"
+                // Por ejemplo, navegar a la actividad de inicio
+                return true
+            }
+            R.id.mysale -> {
+                // Lógica para manejar el clic en "Mis Pedidos"
+                // Por ejemplo, navegar a la actividad de mis pedidos
+                return true
+            }
+            R.id.map -> {
+                // Lógica para manejar el clic en "Mapa"
+                // Por ejemplo, abrir un fragmento con el mapa
+                return true
+            }
+            R.id.createsale -> {
+                val intent = Intent(this, CreateOrder::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.profile -> {
+                // Lógica para manejar el clic en "Perfil"
+                // Por ejemplo, abrir la actividad de perfil del usuario
+                return true
+            }
+        }
+        return false
+    }
 
 }
