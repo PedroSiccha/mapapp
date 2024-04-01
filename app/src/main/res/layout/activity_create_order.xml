@@ -176,104 +176,116 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cvRequest"
-        android:layout_width="match_parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvListProducts"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="8dp"
-        android:layout_marginHorizontal="4dp"
-        android:layout_margin="8dp"
-        app:contentPadding="4dp"
-        app:cardCornerRadius="15dp"
-        app:cardElevation="2dp"
-        app:strokeColor="@color/white_backgroud"
-        app:layout_constraintTop_toBottomOf="@+id/cl_search_product">
+        android:layout_marginTop="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_search_product"
+        tools:itemCount="3"
+        tools:listitem="@layout/item_list_products" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:layout_height="60dp"
-            android:orientation="horizontal"
-            android:layout_marginHorizontal="8dp"
-            android:gravity="center"
-            android:weightSum="10">
+<!--    <com.google.android.material.card.MaterialCardView-->
+<!--        android:id="@+id/cvRequest"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginVertical="8dp"-->
+<!--        android:layout_marginHorizontal="4dp"-->
+<!--        android:layout_margin="8dp"-->
+<!--        app:contentPadding="4dp"-->
+<!--        app:cardCornerRadius="15dp"-->
+<!--        app:cardElevation="2dp"-->
+<!--        app:strokeColor="@color/white_backgroud"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/cl_search_product">-->
 
-            <ImageView
-                android:id="@+id/ivProduct"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/add_sales"
-                android:layout_margin="8dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            tools:layout_height="60dp"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:layout_marginHorizontal="8dp"-->
+<!--            android:gravity="center"-->
+<!--            android:weightSum="10">-->
 
-            <LinearLayout
-                android:id="@+id/llDataProduct"
-                android:layout_width="0dp"
-                android:layout_weight="5"
-                android:layout_marginStart="4dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintStart_toEndOf="@id/ivProduct"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
+<!--            <ImageView-->
+<!--                android:id="@+id/ivProduct"-->
+<!--                android:layout_width="50dp"-->
+<!--                android:layout_height="50dp"-->
+<!--                android:src="@drawable/add_sales"-->
+<!--                android:layout_margin="8dp"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"/>-->
 
-                <TextView
-                    android:id="@+id/tvProduct"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{model.name}"
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_background"
-                    android:textSize="12sp"
-                    tools:text="Nombre del producto"/>
+<!--            <LinearLayout-->
+<!--                android:id="@+id/llDataProduct"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_weight="5"-->
+<!--                android:layout_marginStart="4dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="vertical"-->
+<!--                app:layout_constraintStart_toEndOf="@id/ivProduct"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent">-->
 
-                <TextView
-                    android:id="@+id/tvStock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{`Subido el `+model.uploaded}"
-                    android:textColor="@color/black"
-                    android:textSize="10sp"
-                    tools:text="47 DOC"/>
+<!--                <TextView-->
+<!--                    android:id="@+id/tvProduct"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="@{model.name}"-->
+<!--                    android:textStyle="bold"-->
+<!--                    android:textColor="@color/blue_background"-->
+<!--                    android:textSize="12sp"-->
+<!--                    tools:text="Nombre del producto"/>-->
 
-                <TextView
-                    android:id="@+id/tvUnid"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{`Subido el `+model.uploaded}"
-                    android:textColor="@color/black"
-                    android:textSize="10sp"
-                    tools:text="0 UNID"/>
+<!--                <TextView-->
+<!--                    android:id="@+id/tvStock"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="@{`Subido el `+model.uploaded}"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:textSize="10sp"-->
+<!--                    tools:text="47 DOC"/>-->
 
-            </LinearLayout>
+<!--                <TextView-->
+<!--                    android:id="@+id/tvUnid"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="@{`Subido el `+model.uploaded}"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:textSize="10sp"-->
+<!--                    tools:text="0 UNID"/>-->
 
-            <ImageView
-                android:id="@+id/ivAdd"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/agregar"
-                android:scaleType="centerCrop"
-                android:layout_margin="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/ivInfo"/>
+<!--            </LinearLayout>-->
 
-            <ImageView
-                android:id="@+id/ivInfo"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/informacion"
-                android:scaleType="centerCrop"
-                android:layout_margin="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/ivAdd"-->
+<!--                android:layout_width="20dp"-->
+<!--                android:layout_height="20dp"-->
+<!--                android:src="@drawable/agregar"-->
+<!--                android:scaleType="centerCrop"-->
+<!--                android:layout_margin="8dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintEnd_toStartOf="@id/ivInfo"/>-->
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+<!--            <ImageView-->
+<!--                android:id="@+id/ivInfo"-->
+<!--                android:layout_width="20dp"-->
+<!--                android:layout_height="20dp"-->
+<!--                android:src="@drawable/informacion"-->
+<!--                android:scaleType="centerCrop"-->
+<!--                android:layout_margin="8dp"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"/>-->
 
-    </com.google.android.material.card.MaterialCardView>
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+<!--    </com.google.android.material.card.MaterialCardView>-->
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/atvProduct"
@@ -287,7 +299,7 @@
         android:textSize="8sp"
         android:textColor="@color/white_backgroud"
         android:background="@color/blue_background"
-        app:layout_constraintTop_toBottomOf="@id/cvRequest"
+        app:layout_constraintTop_toBottomOf="@id/rvListProducts"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/tvCantidad"
         app:layout_constraintHorizontal_weight="1"
@@ -433,11 +445,25 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginStart="32dp"
-        android:text="S/. 16.50"
+        android:text="S/. 0.00"
         android:textStyle="bold"
         android:textSize="10sp"
         app:layout_constraintTop_toBottomOf="@id/viewLine3"
         app:layout_constraintStart_toEndOf="@+id/tvTitleImport"
         tools:ignore="SmallSp" />
+
+    <Button
+        android:id="@+id/buttonCreate"
+        style="@style/Widget.App.Button.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="@dimen/dim_16dp"
+        android:text="Crear Pedido"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

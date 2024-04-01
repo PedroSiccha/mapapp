@@ -6,8 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
-import android.widget.ProgressBar
 import android.widget.Toast
 import com.inforad.mapapp.databinding.ActivityMainBinding
 import com.inforad.mapapp.model.LoginRequest
@@ -17,7 +15,6 @@ import com.inforad.mapapp.view.maps.MapsActivity
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response as OkHttpResponse
-import okhttp3.Request
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
