@@ -60,6 +60,7 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
     lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     val options = arrayOf("VENTA", "NO VENTA")
+    var token = ""
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -194,7 +195,7 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
 
         val apiService = retrofit.create(ApiService::class.java)
 
-        val token = intent.getStringExtra("token")
+        token = intent.getStringExtra("token").toString()
 
         val call = apiService.getLocations("Bearer $token")
         call.enqueue(this)
@@ -333,8 +334,6 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.home -> {
-                // Lógica para manejar el clic en "Inicio"
-                // Por ejemplo, navegar a la actividad de inicio
                 return true
             }
             R.id.mysale -> {
@@ -343,12 +342,12 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
                 return true
             }
             R.id.map -> {
-                // Lógica para manejar el clic en "Mapa"
-                // Por ejemplo, abrir un fragmento con el mapa
                 return true
             }
             R.id.createsale -> {
+                item.isChecked = true
                 val intent = Intent(this, CreateOrder::class.java)
+                intent.putExtra("token", token)
                 startActivity(intent)
                 return true
             }

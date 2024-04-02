@@ -14,12 +14,16 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.inforad.mapapp.R
 import com.inforad.mapapp.model.DetallePedido
 import com.inforad.mapapp.model.Producto
+import okhttp3.*
+import org.json.JSONArray
+import java.io.IOException
 
 
 class ProductAdapter(private val listener: OnProductClickListener) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
@@ -88,7 +92,7 @@ class ProductAdapter(private val listener: OnProductClickListener) : RecyclerVie
 
             dialog.show()
             val spinnerPresentacion = dialogViewOrders.findViewById<Spinner>(R.id.buttonSearchPresentacion)
-            createSelect(spinnerPresentacion, mContext!!)
+            createSelect(product.id!!.toInt(), spinnerPresentacion, mContext!!)
 
             val tvCantidades = dialogViewOrders.findViewById<TextView>(R.id.tvCantidades)
             val tvData = dialogViewOrders.findViewById<TextView>(R.id.et_data)
@@ -158,23 +162,52 @@ class ProductAdapter(private val listener: OnProductClickListener) : RecyclerVie
             }
         }
 
-        private fun createSelect(spinner: Spinner?, context: Context) {
-            val options = arrayOf("¿PRESENTACIÓN?", "UND", "DOC")
-            val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, options)
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinner?.adapter = adapter
+        private fun createSelect(productoId: Int, spinner: Spinner?, context: Context) {
+            val url = "https://clincia.000webhostapp.com/api/presentation/get-by-products.php?product_id=$productoId" // Reemplaza con la URL de tu backend PHP
 
-            // Manejar la selección del usuario
-            spinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    val selectedOption = parent?.getItemAtPosition(position).toString()
-                    txtUnidad = selectedOption
+            val client = OkHttpClient()
+
+            val request = Request.Builder()
+                .url(url)
+                .build()
+
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    // Manejar la falla de la solicitud
+                    e.printStackTrace()
+                    // Mostrar un mensaje de error al usuario si falla la solicitud
+                    Toast.makeText(context, "Error al obtener las presentaciones", Toast.LENGTH_SHORT).show()
                 }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    // Hacer algo si no se selecciona nada
+                override fun onResponse(call: Call, response: Response) {
+                    // Manejar la respuesta del servidor
+                    response.body()?.let { responseBody ->
+                        try {
+                            val json = responseBody.string()
+                            val presentaciones = mutableListOf<String>()
+                            val jsonArray = JSONArray(json)
+                            for (i in 0 until jsonArray.length()) {
+                                val presentacion = jsonArray.getJSONObject(i).getString("name") // Reemplaza "name" con el nombre del campo que contiene la presentación en tu JSON
+                                presentaciones.add(presentacion)
+                            }
+
+                            // Actualizar el Spinner con las presentaciones obtenidas
+                            spinner?.post {
+                                val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, presentaciones.toTypedArray())
+                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                                spinner?.adapter = adapter
+                            }
+
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            // Mostrar un mensaje de error al usuario si hay un problema al procesar la respuesta JSON
+                            Toast.makeText(context, "Error al procesar las presentaciones", Toast.LENGTH_SHORT).show()
+                        } finally {
+                            responseBody.close() // Cerrar el cuerpo de la respuesta
+                        }
+                    }
                 }
-            }
+            })
         }
     }
 }

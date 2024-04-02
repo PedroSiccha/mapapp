@@ -1,17 +1,20 @@
 package com.inforad.mapapp.view.orders.create
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.inforad.mapapp.R
 import com.inforad.mapapp.databinding.ActivityCreateOrderBinding
 import com.inforad.mapapp.model.Cliente
@@ -20,6 +23,7 @@ import com.inforad.mapapp.model.DetallePedido
 import com.inforad.mapapp.model.OrderRequest
 import com.inforad.mapapp.model.Producto
 import com.inforad.mapapp.service.ApiService
+import com.inforad.mapapp.view.maps.MapsActivity
 import com.inforad.mapapp.view.orders.adapter.DetallesPedidoAdapter
 import com.inforad.mapapp.view.orders.adapter.ProductAdapter
 import okhttp3.Interceptor
@@ -32,7 +36,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
 
-class CreateOrder : AppCompatActivity(), ProductAdapter.OnProductClickListener {
+class CreateOrder : AppCompatActivity(), ProductAdapter.OnProductClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding: ActivityCreateOrderBinding
     private lateinit var progressBar: AlertDialog
     private lateinit var etSearchProduct: EditText
@@ -42,15 +46,19 @@ class CreateOrder : AppCompatActivity(), ProductAdapter.OnProductClickListener {
     private lateinit var detallesPedido: MutableList<DetallePedido>
 
     private lateinit var adapter: DetallesPedidoAdapter
+    var token = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateOrderBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        bottomNavigationView.setOnNavigationItemSelectedListener(this)
         progressBar = createProgressDialog()
         detallesPedido = mutableListOf()
         viewProgress(false)
         searchClient()
         searchProduct()
+        token = intent.getStringExtra("token").toString()
         productAdapter.clearProducts()
         binding.buttonCreate.setOnClickListener {
             viewProgress(true)
@@ -294,6 +302,34 @@ class CreateOrder : AppCompatActivity(), ProductAdapter.OnProductClickListener {
             }
         })
 
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.home -> {
+                finish()
+                return true
+            }
+            R.id.mysale -> {
+                // Lógica para manejar el clic en "Mis Pedidos"
+                // Por ejemplo, navegar a la actividad de mis pedidos
+                return true
+            }
+            R.id.map -> {
+                item.isChecked = true
+                finish()
+                return true
+            }
+            R.id.createsale -> {
+                return true
+            }
+            R.id.profile -> {
+                // Lógica para manejar el clic en "Perfil"
+                // Por ejemplo, abrir la actividad de perfil del usuario
+                return true
+            }
+        }
+        return false
     }
 
 
