@@ -21,11 +21,18 @@
         tools:replace="android:appComponentFactory"
         tools:targetApi="31">
         <activity
-            android:name=".view.orders.create.CreateOrder"
+            android:name=".view.orders.CreateOrders"
             android:exported="false" />
         <activity
+            android:name=".view.orders.list.ListOrderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.orders.create.CreateOrder"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".view.maps.MapsActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

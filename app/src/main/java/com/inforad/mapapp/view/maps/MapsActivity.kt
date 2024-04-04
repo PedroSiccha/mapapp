@@ -10,16 +10,11 @@ import com.google.android.gms.location.LocationServices
 import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.Spinner
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
@@ -32,6 +27,7 @@ import com.inforad.mapapp.databinding.ActivityMapsBinding
 import com.inforad.mapapp.model.Location
 import com.inforad.mapapp.service.ApiService
 import com.inforad.mapapp.view.orders.create.CreateOrder
+import com.inforad.mapapp.view.orders.list.ListOrderActivity
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import org.osmdroid.api.IMapController
@@ -337,8 +333,8 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
                 return true
             }
             R.id.mysale -> {
-                // Lógica para manejar el clic en "Mis Pedidos"
-                // Por ejemplo, navegar a la actividad de mis pedidos
+                val intent = Intent(this, ListOrderActivity::class.java)
+                startActivity(intent)
                 return true
             }
             R.id.map -> {

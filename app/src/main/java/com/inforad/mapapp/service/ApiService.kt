@@ -5,6 +5,7 @@ import com.inforad.mapapp.model.CreateOrderResponse
 import com.inforad.mapapp.model.Location
 import com.inforad.mapapp.model.LoginRequest
 import com.inforad.mapapp.model.LoginResponse
+import com.inforad.mapapp.model.Order
 import com.inforad.mapapp.model.OrderRequest
 import com.inforad.mapapp.model.Producto
 import retrofit2.Call
@@ -45,5 +46,8 @@ interface ApiService {
         @Body
         orderRequest: OrderRequest
     ): Call<CreateOrderResponse>
+
+    @GET("orders/get-by-user.php")
+    suspend fun getOrders(): List<Order>
 
 }
