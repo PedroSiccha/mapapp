@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/home"
+        android:title="Inicio"/>
+
+    <item
+        android:id="@+id/mysale"
+        android:icon="@drawable/list"
+        android:title="Mis Pedidos"/>
+
+    <item
+        android:id="@+id/map"
+        android:icon="@drawable/map"
+        android:title="Mapa"/>
+
+    <item
+        android:id="@+id/createsale"
+        android:icon="@drawable/add_sales"
+        android:title="Crear Venta"/>
+
+    <item
+        android:id="@+id/profile"
+        android:icon="@drawable/account_circle"
+        android:title="Perfil"/>
+
+</menu>

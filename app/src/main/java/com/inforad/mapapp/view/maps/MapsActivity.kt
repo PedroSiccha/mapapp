@@ -4,15 +4,32 @@ import android.content.pm.PackageManager
 import android.location.GpsStatus
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import android.Manifest
+import android.app.AlertDialog
+import android.content.Intent
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.navigation.NavigationView
 import com.inforad.mapapp.R
 import com.inforad.mapapp.databinding.ActivityMapsBinding
 import com.inforad.mapapp.model.Location
 import com.inforad.mapapp.service.ApiService
+import com.inforad.mapapp.view.orders.create.CreateOrder
+import com.inforad.mapapp.view.orders.list.ListOrderActivity
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapListener
@@ -29,33 +46,106 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callback<List<Location>> {
+
+class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callback<List<Location>>, BottomNavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding: ActivityMapsBinding
     lateinit var mMap: MapView
     lateinit var controller: IMapController
     lateinit var mMyLocationOverlay: MyLocationNewOverlay
+    lateinit var progressBar: AlertDialog
+    lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    val options = arrayOf("VENTA", "NO VENTA")
+    var token = ""
+
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+    private lateinit var toggle: ActionBarDrawerToggle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        progressBar = createProgressDialog()
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.sheet)
+        viewMenuLateral()
+        viewBottomSheet()
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        bottomNavigationView.setOnNavigationItemSelectedListener(this)
+        binding.btnMenu.setOnClickListener {
+            binding.drawerLayout.openDrawer(GravityCompat.START)
+        }
         Configuration.getInstance().load(
             applicationContext,
             getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE)
         )
-        val token = intent.getStringExtra("token")
         mMap = binding.osmmap
         mMap.setTileSource(TileSourceFactory.MAPNIK)
         mMap.mapCenter
         mMap.setMultiTouchControls(true)
         mMap.addMapListener(this)
+        viewProgress(status = true)
 
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        getPosition()
+
+        getLocations()
+
+        binding.ivUpdateUbication.setOnClickListener {
+            viewProgress(status = true)
+            getLocations()
+        }
+
+        binding.ivMiUbication.setOnClickListener {
+            viewProgress(status = true)
+            getPosition()
+            getLocations()
+        }
+
+    }
+
+    private fun viewBottomSheet() {
+        bottomSheetBehavior.peekHeight = 0
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+    }
+
+    private fun viewMenuLateral() {
+        drawerLayout = binding.drawerLayout
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        navigationView = binding.navView
+
+        val navigationView = binding.navView
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_home -> {
+                    Toast.makeText(applicationContext, "Home clicked", Toast.LENGTH_SHORT).show()
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setNavigationItemSelectedListener true
+
+                    true
+                }
+
+                R.id.nav_ventas -> {
+//                    Toast.makeText(applicationContext, "Ventas clicked", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, CreateOrder::class.java)
+                    startActivity(intent)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+
+                else -> false
+            }
+            true
+        }
+    }
+
+    private fun getPosition() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -65,56 +155,47 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
             )
             return
         }
-
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             location?.let {
                 val geoPoint = GeoPoint(it.latitude, it.longitude)
                 controller = mMap.controller
                 controller.setZoom(17.0)
                 controller.setCenter(geoPoint)
+
                 mMyLocationOverlay = MyLocationNewOverlay(mMap)
                 mMap.overlays.add(mMyLocationOverlay)
                 mMyLocationOverlay.enableMyLocation()
                 mMyLocationOverlay.enableFollowLocation()
+                viewProgress(status = false)
             }
         }
-
-        getLocations()
-
-        binding.btnUpdate.setOnClickListener {
-            getLocations()
-        }
-
-//        val locations = listOf(
-//            Location("Local 1", -9.223612, -77.6855180),
-//            Location("Local 2", -9.224941, -77.688457),
-//            Location("Local 3", -9.222564, -77.687502),
-//            Location("Local 3", -9.222627,-77.6830392)
-//            // Agrega más ubicaciones según sea necesario
-//        )
-
-//        for (location in locations) {
-//            val marker = Marker(mMap)
-//            marker.position = GeoPoint(location.latitude, location.longitude)
-//            marker.title = location.name
-//            mMap.overlays.add(marker)
-//        }
-
     }
 
     private fun getLocations() {
+        val interceptor = object : Interceptor {
+            override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
+                val request = chain.request()
+                println("Solicitando a la URL: ${request.method()} ${request.url()}")
+                return chain.proceed(request)
+            }
+        }
+
+        val httpClient = OkHttpClient.Builder()
+        httpClient.addInterceptor(interceptor)
+        val client = httpClient.build()
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.162.130:80/map_backend/api/")
+            .baseUrl("https://clincia.000webhostapp.com/api/")
             .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
             .build()
 
         val apiService = retrofit.create(ApiService::class.java)
 
-        // Aquí deberías recuperar el token de autenticación guardado previamente
-        val token = intent.getStringExtra("token")
+        token = intent.getStringExtra("token").toString()
 
         val call = apiService.getLocations("Bearer $token")
         call.enqueue(this)
+
     }
 
     override fun onRequestPermissionsResult(
@@ -125,29 +206,20 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, initialize location services
-                // You can also show a message to user that location permission is granted and reload the activity
                 recreate()
-            } else {
-                // Permission denied, handle this accordingly
-            }
+            } else {}
         }
     }
 
     override fun onScroll(event: ScrollEvent?): Boolean {
-        Log.e("TAG", "onCreate:la ${event?.source?.getMapCenter()?.latitude}")
-        Log.e("TAG", "onCreate:lo ${event?.source?.getMapCenter()?.longitude}")
         return true
     }
 
     override fun onZoom(event: ZoomEvent?): Boolean {
-        Log.e("TAG", "onZoom zoom level: ${event?.zoomLevel}   source:  ${event?.source}")
         return false
     }
 
-    override fun onGpsStatusChanged(event: Int) {
-
-    }
+    override fun onGpsStatusChanged(event: Int) {}
 
     data class Location(val name: String, val latitude: Double, val longitude: Double)
 
@@ -157,21 +229,131 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
     ) {
         if (response.isSuccessful) {
             val locations = response.body()
-            // Agregar marcadores para cada ubicación en el mapa
             locations?.forEach { location ->
-                Log.e("LOCATION", location.toString())
                 val marker = Marker(mMap)
                 marker.position = GeoPoint((location.latitude * 1E6).toInt(), (location.longitude*1E6).toInt())
-                marker.title = location.localname
+                marker.title = "${location.localname}"
+                marker.subDescription = "Descripcion: ${location.descripttion}\nTelefono: ${location.phone}\nEmail: ${location.email}\nCategoria: ${location.category}"
+                var txtEstado = ""
+                when (location.status) {
+                    "PENDIENTE" -> {
+                        marker.icon = resources.getDrawable(R.drawable.location)
+                        txtEstado = "OK"
+                    }
+                    "ENTREGADO" -> {
+                        marker.icon = resources.getDrawable(R.drawable.alert_location)
+                        txtEstado = "OK"
+                    }
+                    "SIN PEDIDO" -> {
+                        marker.icon = resources.getDrawable(R.drawable.alert_location)
+                        txtEstado = "OK"
+                    }
+                    else -> marker.icon = resources.getDrawable(R.drawable.location)
+                }
+
+
+                marker.setOnMarkerClickListener { marker, mapView ->
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    createSelect(binding.spinner)
+                    binding.markerTitle.text = location.localname
+                    binding.markerDescription.text = location.descripttion
+                    binding.markerEmail.text = location.email
+                    binding.markerPhone.text = location.phone
+                    binding.markerCategory.text = location.category
+                    binding.markerStatus.text = location.status
+                    binding.buttonVerMas.text = txtEstado
+                    binding.buttonVerMas.setOnClickListener {
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    }
+                    true
+                }
                 mMap.overlays.add(marker)
             }
-        } else {
-            // Manejar errores de la respuesta
+            viewProgress(status = false)
+        } else {}
+    }
+
+    private fun createSelect(spinner: Spinner?) {
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner?.adapter = adapter
+
+        // Manejar la selección del usuario
+//        spinner?.setOnItemSelectedListener { parent, view, position, id ->
+//            val selectedOption = parent.getItemAtPosition(position).toString()
+//            // Hacer lo que necesites con la opción seleccionada
+//            // Por ejemplo, mostrarla en un Toast
+//            // Toast.makeText(this, "Seleccionaste: $selectedOption", Toast.LENGTH_SHORT).show()
+//        }
+    }
+
+    private fun createOrder() {
+        val dialogCreatewOrder = LayoutInflater.from(this@MapsActivity).inflate(R.layout.custom_create_order, null)
+        val dialog = AlertDialog.Builder(this@MapsActivity)
+            .setView(dialogCreatewOrder)
+            .create()
+        if (!isFinishing) {
+            dialog.show()
         }
     }
 
-    override fun onFailure(call: Call<List<com.inforad.mapapp.model.Location>>, t: Throwable) {
-        Log.e("Error: ", t.message.toString())
+    private fun viewOrder() {
+        val dialogViewOrders = LayoutInflater.from(this@MapsActivity).inflate(R.layout.custom_view_order, null)
+        val dialog = AlertDialog.Builder(this@MapsActivity)
+            .setView(dialogViewOrders)
+            .create()
+
+        if (!isFinishing) {
+            dialog.show()
+        }
+    }
+
+    private fun viewProgress(status: Boolean) {
+
+        if (status) {
+            progressBar.show()
+        }
+        if (!status) {
+            progressBar.dismiss()
+        }
+    }
+
+    private fun createProgressDialog(): AlertDialog {
+        val dialogViewOrders = LayoutInflater.from(this).inflate(R.layout.custom_progress_dialog, null)
+        return AlertDialog.Builder(this)
+            .setView(dialogViewOrders)
+            .create()
+    }
+
+    override fun onFailure(call: Call<List<com.inforad.mapapp.model.Location>>, t: Throwable) {}
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.home -> {
+                return true
+            }
+            R.id.mysale -> {
+                val intent = Intent(this, ListOrderActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.map -> {
+                return true
+            }
+            R.id.createsale -> {
+                item.isChecked = true
+                val intent = Intent(this, CreateOrder::class.java)
+                intent.putExtra("token", token)
+                startActivity(intent)
+                return true
+            }
+            R.id.profile -> {
+                // Lógica para manejar el clic en "Perfil"
+                // Por ejemplo, abrir la actividad de perfil del usuario
+                return true
+            }
+        }
+        return false
     }
 
 }

@@ -9,6 +9,7 @@
 
     <application
         android:allowBackup="true"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -16,14 +17,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Mapapp"
-        tools:targetApi="31"
-        android:usesCleartextTraffic="true">
-
+        android:usesCleartextTraffic="true"
+        tools:replace="android:appComponentFactory"
+        tools:targetApi="31">
+        <activity
+            android:name=".view.home.HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.orders.CreateOrders"
+            android:exported="false" />
+        <activity
+            android:name=".view.orders.list.ListOrderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.orders.create.CreateOrder"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".view.maps.MapsActivity"
-            android:exported="true">
-        </activity>
-
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

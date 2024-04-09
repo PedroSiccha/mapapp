@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="2dp">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/atvProduct"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="Pomarola"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="11sp"
+            android:layout_marginTop="5dp"
+            app:layout_constraintEnd_toStartOf="@id/tvCantidad"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SmallSp"
+            tools:text="Pomarola" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvCantidad"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="12"
+            android:layout_marginTop="5dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="11sp"
+            app:layout_constraintEnd_toStartOf="@id/tvPresentacion"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/atvProduct"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SmallSp"
+            tools:text="12" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvPresentacion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="UND"
+            android:layout_marginTop="5dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="11sp"
+            app:layout_constraintEnd_toStartOf="@id/tvPrecio"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/tvCantidad"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SmallSp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvPrecio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="S/. 16.50"
+            android:layout_marginTop="5dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="11sp"
+            app:layout_constraintEnd_toStartOf="@id/tvAction"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/tvPresentacion"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SmallSp"
+            tools:text="S/. 16.50" />
+
+        <ImageView
+            android:id="@+id/tvAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/delete"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvPrecio"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SmallSp"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

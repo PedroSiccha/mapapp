@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/dim_16dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nuevo Pedido"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="16dp"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+
+    <ImageView
+        android:id="@+id/ivClose"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/cerrar"
+        android:layout_margin="20dp"/>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="350dp"
+        android:layout_height="1dp"
+        android:layout_margin="@dimen/dim_8dp"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="?android:attr/listDivider"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="51dp" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_search_client"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        tools:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider">
+
+        <EditText
+            android:id="@+id/et_search_client"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/dr_rect_white_e9ebee_filled_rounded_corner"
+            android:drawablePadding="8dp"
+            android:gravity="start"
+            android:hint="Código del Cliente"
+            android:inputType="text"
+            android:lines="1"
+            android:maxLines="30"
+            android:paddingStart="16dp"
+            android:paddingTop="@dimen/dim_12dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="12dp"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_clear_search_query"
+            android:layout_width="20dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_close_circle_black"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/et_search_client"
+            app:layout_constraintEnd_toStartOf="@+id/iv_filter"
+            app:layout_constraintTop_toTopOf="@+id/et_search_client" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_filter"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="4dp"
+            android:background="@color/white"
+            android:elevation="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/lupa"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Corner20p"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_name_client"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        tools:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_search_client">
+
+        <EditText
+            android:id="@+id/et_name_client"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/dr_rect_white_e9ebee_filled_rounded_corner"
+            android:drawablePadding="8dp"
+            android:gravity="start"
+            android:hint="Cliente"
+            android:inputType="text"
+            android:lines="1"
+            android:maxLines="30"
+            android:paddingStart="16dp"
+            android:paddingTop="@dimen/dim_12dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="12dp"
+            android:textSize="14sp"
+            android:enabled="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_search_product"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        tools:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_name_client">
+
+        <EditText
+            android:id="@+id/et_search_product"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/dr_rect_white_e9ebee_filled_rounded_corner"
+            android:drawablePadding="8dp"
+            android:gravity="start"
+            android:hint="Buscar Producto..."
+            android:inputType="text"
+            android:lines="1"
+            android:maxLines="30"
+            android:paddingStart="16dp"
+            android:paddingTop="@dimen/dim_12dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="12dp"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvRequest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        android:layout_marginHorizontal="4dp"
+        android:layout_margin="8dp"
+        app:contentPadding="4dp"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="2dp"
+        app:strokeColor="@color/white_backgroud"
+        app:layout_constraintTop_toBottomOf="@+id/cl_search_product">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout_height="60dp"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="8dp"
+            android:gravity="center"
+            android:weightSum="10">
+
+            <ImageView
+                android:id="@+id/ivProduct"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/add_sales"
+                android:layout_margin="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <LinearLayout
+                android:id="@+id/llDataProduct"
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:layout_marginStart="4dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintStart_toEndOf="@id/ivProduct"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <TextView
+                    android:id="@+id/tvProduct"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{model.name}"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_background"
+                    android:textSize="12sp"
+                    tools:text="Nombre del producto"/>
+
+                <TextView
+                    android:id="@+id/tvStock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{`Subido el `+model.uploaded}"
+                    android:textColor="@color/black"
+                    android:textSize="10sp"
+                    tools:text="47 DOC"/>
+
+                <TextView
+                    android:id="@+id/tvUnid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{`Subido el `+model.uploaded}"
+                    android:textColor="@color/black"
+                    android:textSize="10sp"
+                    tools:text="0 UNID"/>
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ivAdd"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/agregar"
+                android:scaleType="centerCrop"
+                android:layout_margin="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/ivInfo"/>
+
+            <ImageView
+                android:id="@+id/ivInfo"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/informacion"
+                android:scaleType="centerCrop"
+                android:layout_margin="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

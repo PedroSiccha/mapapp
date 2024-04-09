@@ -8,6 +8,12 @@
     <color name="text_secundary">#7d889b</color>
     <color name="text_subtitle">#515a69</color>
     <color name="blue_background">#619FFF</color>
+    <color name="red_background">#FF6161</color>
+    <color name="green_background">#169C43</color>
     <color name="transparent_green">#19006993</color>
+
+    <color name="colorPrimaryLight">#EFF3FB</color>
+    <color name="colorPrimary">#0E409B</color>
+    <color name="colorPrimary2">#1049B2</color>
 
 </resources>

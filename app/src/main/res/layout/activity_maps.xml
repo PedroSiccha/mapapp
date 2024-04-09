@@ -1,36 +1,279 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/drawer_layout"
+    android:fitsSystemWindows="false"
     tools:context=".view.maps.MapsActivity">
 
-    <org.osmdroid.views.MapView
-        android:id="@+id/osmmap"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    <!--     android:fitsSystemWindows="false"     -->
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_update"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="@dimen/dim_16dp"
-        android:layout_marginTop="@dimen/dim_16dp"
-        android:layout_marginEnd="@dimen/dim_16dp"
-        android:layout_marginBottom="@dimen/dim_8dp"
-        android:backgroundTint="@color/blue_background"
-        android:gravity="bottom"
-        android:paddingStart="@dimen/dim_16dp"
-        android:paddingTop="@dimen/dim_12dp"
-        android:paddingEnd="@dimen/dim_24dp"
-        android:paddingBottom="@dimen/dim_12dp"
-        android:text="@string/update"
-        android:textSize="@dimen/dim_14sp"
-        app:cornerRadius="@dimen/dim_10dp"
-        app:iconGravity="end"
-        app:iconSize="@dimen/dim_16dp" />
+        android:layout_height="match_parent">
 
-</RelativeLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <org.osmdroid.views.MapView
+                android:id="@+id/osmmap"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <ImageButton
+                android:id="@+id/btnMenu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/menu"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="32dp"
+                android:layout_marginStart="5dp"
+                app:tint="@color/blue_background" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                android:background="@color/blue_background"
+                android:backgroundTint="#8F363637"
+                android:layout_marginEnd="5dp"
+                android:layout_marginTop="32dp"
+                app:cardCornerRadius="@dimen/dim_8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/ivUpdateUbication"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/updateubicacion"
+                        android:layout_margin="5dp"/>
+
+                    <ImageView
+                        android:id="@+id/ivMiUbication"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/marcador"
+                        android:layout_margin="5dp"/>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <FrameLayout
+            android:id="@+id/sheet"
+            android:layout_width="match_parent"
+            android:layout_height="520dp"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+            android:background="@drawable/rounded">
+
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_horizontal_rule_24"
+                android:scaleType="centerCrop"
+                android:layout_gravity="center|top"
+                app:tint="@color/blue_background" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="16dp">
+
+                <TextView
+                    android:id="@+id/markerTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dim_8dp"
+                    android:layout_marginStart="@dimen/dim_8dp"
+                    android:layout_marginEnd="@dimen/dim_8dp"
+                    android:padding="8dp"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:text="LOCALNAME"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:id="@+id/markerDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Descripción"
+                    android:layout_marginTop="@dimen/dim_8dp"
+                    android:layout_marginStart="@dimen/dim_8dp"
+                    android:layout_marginEnd="@dimen/dim_8dp"
+                    android:padding="@dimen/dim_8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/markerTitle"/>
+
+                <LinearLayout
+                    android:id="@+id/llEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/dim_8dp"
+                    app:layout_constraintTop_toBottomOf="@id/markerDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/ivEmial"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/correoelectronico"/>
+
+                    <TextView
+                        android:id="@+id/markerEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dim_16dp"
+                        android:text="Descripción"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/dim_8dp"
+                    app:layout_constraintTop_toBottomOf="@id/llEmail"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/ivPhone"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/llamar"/>
+
+                    <TextView
+                        android:id="@+id/markerPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dim_16dp"
+                        android:text="Descripción"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dim_8dp"
+                    android:layout_marginStart="@dimen/dim_8dp"
+                    android:layout_marginEnd="@dimen/dim_8dp"
+                    android:padding="8dp"
+                    android:textStyle="bold"
+                    android:text="CATEGORIA"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/llPhone"/>
+
+                <TextView
+                    android:id="@+id/markerCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Categoria"
+                    android:layout_marginTop="@dimen/dim_8dp"
+                    android:layout_marginStart="@dimen/dim_8dp"
+                    android:layout_marginEnd="@dimen/dim_8dp"
+                    android:padding="@dimen/dim_8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvCategory"/>
+
+                <TextView
+                    android:id="@+id/markerStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dim_8dp"
+                    android:layout_marginStart="@dimen/dim_8dp"
+                    android:layout_marginEnd="@dimen/dim_8dp"
+                    android:padding="8dp"
+                    android:textStyle="bold"
+                    android:text="ESTADO"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/markerCategory"/>
+
+                <Spinner
+                    android:id="@+id/spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_centerInParent="true"
+                    app:layout_constraintTop_toBottomOf="@+id/markerStatus"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <Button
+                    android:id="@+id/buttonVerMas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="90dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:backgroundTint="@color/blue_background"
+                    android:text="Ver más"
+                    app:layout_constraintTop_toBottomOf="@+id/spinner"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </FrameLayout>
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottomAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:fabCradleMargin="10dp"
+            app:fabCradleRoundedCornerRadius="10dp"
+            app:fabCradleVerticalOffset="10dp">
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNavigationView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                app:menu="@menu/bottom_nav_menu"
+                android:background="@drawable/transparent_background"/>
+
+        </com.google.android.material.bottomappbar.BottomAppBar>
+
+<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--            android:id="@+id/fab"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:src="@drawable/map"-->
+<!--            app:layout_anchor="@id/bottomAppBar"/>-->
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/nav_header"
+        android:fitsSystemWindows="true"
+        android:background="@color/white"
+        app:itemTextColor="@color/black"
+        app:menu="@menu/nav_menu" />
+
+</androidx.drawerlayout.widget.DrawerLayout>
