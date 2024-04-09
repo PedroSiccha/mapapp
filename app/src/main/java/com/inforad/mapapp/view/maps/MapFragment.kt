@@ -13,17 +13,20 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
 import com.inforad.mapapp.R
 import com.inforad.mapapp.databinding.ActivityMapsBinding
+import com.inforad.mapapp.databinding.FragmentMapBinding
 import com.inforad.mapapp.model.Location
 import com.inforad.mapapp.service.ApiService
 import com.inforad.mapapp.view.orders.create.CreateOrder
@@ -45,10 +48,11 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+const val LOCATION_PERMISSION_REQUEST_CODE = 1
 
+class MapFragment : Fragment(), MapListener, GpsStatus.Listener, Callback<List<Location>> {
+    private lateinit var binding: FragmentMapBinding
 
-class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callback<List<Location>>, BottomNavigationView.OnNavigationItemSelectedListener {
-    private lateinit var binding: ActivityMapsBinding
     lateinit var mMap: MapView
     lateinit var controller: IMapController
     lateinit var mMyLocationOverlay: MyLocationNewOverlay
@@ -57,29 +61,34 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     val options = arrayOf("VENTA", "NO VENTA")
     var token = ""
-
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
-    private lateinit var toggle: ActionBarDrawerToggle
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityMapsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentMapBinding.inflate(inflater, container, false)
+        val view = binding.root
         progressBar = createProgressDialog()
         bottomSheetBehavior = BottomSheetBehavior.from(binding.sheet)
         viewMenuLateral()
         viewBottomSheet()
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-        bottomNavigationView.setOnNavigationItemSelectedListener(this)
+//        val bottomNavigationView = binding.bottomNavigationView
+////        bottomNavigationView.setOnNavigationItemSelectedListener(this)
+//        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
+//            when (menuItem.itemId) {
+//            }
+//            true
+//        }
         binding.btnMenu.setOnClickListener {
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
         Configuration.getInstance().load(
-            applicationContext,
-            getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE)
+            requireContext(),
+            requireActivity().getSharedPreferences(getString(R.string.app_name), AppCompatActivity.MODE_PRIVATE)
         )
         mMap = binding.osmmap
         mMap.setTileSource(TileSourceFactory.MAPNIK)
@@ -89,7 +98,7 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         viewProgress(status = true)
 
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         getPosition()
 
@@ -106,6 +115,7 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
             getLocations()
         }
 
+        return view
     }
 
     private fun viewBottomSheet() {
@@ -116,7 +126,10 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
     private fun viewMenuLateral() {
         drawerLayout = binding.drawerLayout
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        if (requireActivity() is AppCompatActivity) {
+            (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
 
         navigationView = binding.navView
 
@@ -124,7 +137,6 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> {
-                    Toast.makeText(applicationContext, "Home clicked", Toast.LENGTH_SHORT).show()
                     drawerLayout.closeDrawer(GravityCompat.START)
                     return@setNavigationItemSelectedListener true
 
@@ -132,8 +144,7 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
                 }
 
                 R.id.nav_ventas -> {
-//                    Toast.makeText(applicationContext, "Ventas clicked", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, CreateOrder::class.java)
+                    val intent = Intent(requireContext(), CreateOrder::class.java)
                     startActivity(intent)
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
@@ -146,8 +157,8 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
     }
 
     private fun getPosition() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ),
@@ -191,7 +202,7 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
 
         val apiService = retrofit.create(ApiService::class.java)
 
-        token = intent.getStringExtra("token").toString()
+        token = requireActivity().intent.getStringExtra("token").toString()
 
         val call = apiService.getLocations("Bearer $token")
         call.enqueue(this)
@@ -206,9 +217,26 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                recreate()
-            } else {}
+                permissionGrantedListener?.onLocationPermissionGranted()
+            }
         }
+    }
+
+    interface OnLocationPermissionGrantedListener {
+        fun onLocationPermissionGranted()
+    }
+
+    private var permissionGrantedListener: OnLocationPermissionGrantedListener? = null
+
+    fun setOnLocationPermissionGrantedListener(listener: OnLocationPermissionGrantedListener) {
+        permissionGrantedListener = listener
+    }
+
+    private fun createProgressDialog(): AlertDialog {
+        val dialogViewOrders = LayoutInflater.from(context).inflate(R.layout.custom_progress_dialog, null)
+        return AlertDialog.Builder(context)
+            .setView(dialogViewOrders)
+            .create()
     }
 
     override fun onScroll(event: ScrollEvent?): Boolean {
@@ -221,12 +249,7 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
 
     override fun onGpsStatusChanged(event: Int) {}
 
-    data class Location(val name: String, val latitude: Double, val longitude: Double)
-
-    override fun onResponse(
-        call: Call<List<com.inforad.mapapp.model.Location>>,
-        response: Response<List<com.inforad.mapapp.model.Location>>
-    ) {
+    override fun onResponse(call: Call<List<Location>>, response: Response<List<Location>>) {
         if (response.isSuccessful) {
             val locations = response.body()
             locations?.forEach { location ->
@@ -274,38 +297,9 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
     }
 
     private fun createSelect(spinner: Spinner?) {
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, options)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner?.adapter = adapter
-
-        // Manejar la selección del usuario
-//        spinner?.setOnItemSelectedListener { parent, view, position, id ->
-//            val selectedOption = parent.getItemAtPosition(position).toString()
-//            // Hacer lo que necesites con la opción seleccionada
-//            // Por ejemplo, mostrarla en un Toast
-//            // Toast.makeText(this, "Seleccionaste: $selectedOption", Toast.LENGTH_SHORT).show()
-//        }
-    }
-
-    private fun createOrder() {
-        val dialogCreatewOrder = LayoutInflater.from(this@MapsActivity).inflate(R.layout.custom_create_order, null)
-        val dialog = AlertDialog.Builder(this@MapsActivity)
-            .setView(dialogCreatewOrder)
-            .create()
-        if (!isFinishing) {
-            dialog.show()
-        }
-    }
-
-    private fun viewOrder() {
-        val dialogViewOrders = LayoutInflater.from(this@MapsActivity).inflate(R.layout.custom_view_order, null)
-        val dialog = AlertDialog.Builder(this@MapsActivity)
-            .setView(dialogViewOrders)
-            .create()
-
-        if (!isFinishing) {
-            dialog.show()
-        }
     }
 
     private fun viewProgress(status: Boolean) {
@@ -318,42 +312,6 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         }
     }
 
-    private fun createProgressDialog(): AlertDialog {
-        val dialogViewOrders = LayoutInflater.from(this).inflate(R.layout.custom_progress_dialog, null)
-        return AlertDialog.Builder(this)
-            .setView(dialogViewOrders)
-            .create()
-    }
-
-    override fun onFailure(call: Call<List<com.inforad.mapapp.model.Location>>, t: Throwable) {}
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.home -> {
-                return true
-            }
-            R.id.mysale -> {
-                val intent = Intent(this, ListOrderActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            R.id.map -> {
-                return true
-            }
-            R.id.createsale -> {
-                item.isChecked = true
-                val intent = Intent(this, CreateOrder::class.java)
-                intent.putExtra("token", token)
-                startActivity(intent)
-                return true
-            }
-            R.id.profile -> {
-                // Lógica para manejar el clic en "Perfil"
-                // Por ejemplo, abrir la actividad de perfil del usuario
-                return true
-            }
-        }
-        return false
-    }
+    override fun onFailure(call: Call<List<Location>>, t: Throwable) {}
 
 }
