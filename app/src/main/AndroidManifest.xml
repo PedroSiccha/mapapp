@@ -21,6 +21,9 @@
         tools:replace="android:appComponentFactory"
         tools:targetApi="31">
         <activity
+            android:name=".view.home.HomeActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.orders.CreateOrders"
             android:exported="false" />
         <activity

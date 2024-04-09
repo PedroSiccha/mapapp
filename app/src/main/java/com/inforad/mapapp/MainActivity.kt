@@ -11,6 +11,7 @@ import com.inforad.mapapp.databinding.ActivityMainBinding
 import com.inforad.mapapp.model.LoginRequest
 import com.inforad.mapapp.model.LoginResponse
 import com.inforad.mapapp.service.ApiService
+import com.inforad.mapapp.view.home.HomeActivity
 import com.inforad.mapapp.view.maps.MapsActivity
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -72,9 +73,12 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val token = response.body()?.token
                     Toast.makeText(applicationContext, "Bienvenido", Toast.LENGTH_LONG).show()
-                    val intent = Intent(this@MainActivity, MapsActivity::class.java)
+                    val intent = Intent(this@MainActivity, HomeActivity::class.java)
                     intent.putExtra("token", token)
                     startActivity(intent)
+//                    val intent = Intent(this@MainActivity, MapsActivity::class.java)
+//                    intent.putExtra("token", token)
+//                    startActivity(intent)
                 } else {
                     viewProgress(false)
                     Toast.makeText(applicationContext, "Error al iniciar sesión.", Toast.LENGTH_LONG).show()
