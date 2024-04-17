@@ -15,6 +15,7 @@ import com.inforad.mapapp.databinding.ActivityListOrderBinding
 import com.inforad.mapapp.databinding.FragmentCreateOrderBinding
 import com.inforad.mapapp.databinding.FragmentListOrderBinding
 import com.inforad.mapapp.model.Order
+import com.inforad.mapapp.service.OrderApi
 import com.inforad.mapapp.view.orders.adapter.OrderAdapter
 import okhttp3.Call
 import okhttp3.Callback
@@ -46,7 +47,7 @@ class ListOrderFragment : Fragment() {
     }
 
     private fun fetchOrders(userId: Int? = 1) {
-        val url = "https://clincia.000webhostapp.com/api/orders/get-by-user.php?user_id=$userId" // Reemplaza con la URL de tu backend PHP
+        val url = "${OrderApi.BASE_URL}orders/get-by-user.php?user_id=$userId" // Reemplaza con la URL de tu backend PHP
 
         val client = OkHttpClient()
 

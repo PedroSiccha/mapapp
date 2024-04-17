@@ -11,6 +11,7 @@ import com.google.android.material.navigation.NavigationView
 import com.inforad.mapapp.R
 import com.inforad.mapapp.databinding.ActivityListOrderBinding
 import com.inforad.mapapp.model.Order
+import com.inforad.mapapp.service.OrderApi
 import com.inforad.mapapp.view.orders.adapter.OrderAdapter
 import com.inforad.mapapp.view.orders.create.CreateOrder
 import okhttp3.Call
@@ -43,7 +44,7 @@ class ListOrderActivity : AppCompatActivity(), BottomNavigationView.OnNavigation
     }
 
     private fun fetchOrders(userId: Int = 1) {
-        val url = "https://clincia.000webhostapp.com/api/orders/get-by-user.php?user_id=$userId" // Reemplaza con la URL de tu backend PHP
+        val url = "${OrderApi.BASE_URL}orders/get-by-user.php?user_id=$userId" // Reemplaza con la URL de tu backend PHP
 
         val client = OkHttpClient()
 
