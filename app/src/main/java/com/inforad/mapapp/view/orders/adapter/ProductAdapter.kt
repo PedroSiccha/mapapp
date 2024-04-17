@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.inforad.mapapp.R
 import com.inforad.mapapp.model.DetallePedido
 import com.inforad.mapapp.model.Producto
+import com.inforad.mapapp.service.OrderApi
 import okhttp3.*
 import org.json.JSONArray
 import java.io.IOException
@@ -163,7 +164,7 @@ class ProductAdapter(private val listener: OnProductClickListener) : RecyclerVie
         }
 
         private fun createSelect(productoId: Int, spinner: Spinner?, context: Context) {
-            val url = "https://clincia.000webhostapp.com/api/presentation/get-by-products.php?product_id=$productoId" // Reemplaza con la URL de tu backend PHP
+            val url = "${OrderApi.BASE_URL}presentation/get-by-products.php?product_id=$productoId" // Reemplaza con la URL de tu backend PHP
 
             val client = OkHttpClient()
 

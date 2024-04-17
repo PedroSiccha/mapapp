@@ -23,6 +23,7 @@ import com.inforad.mapapp.model.DetallePedido
 import com.inforad.mapapp.model.OrderRequest
 import com.inforad.mapapp.model.Producto
 import com.inforad.mapapp.service.ApiService
+import com.inforad.mapapp.service.OrderApi
 import com.inforad.mapapp.view.maps.MapsActivity
 import com.inforad.mapapp.view.orders.adapter.DetallesPedidoAdapter
 import com.inforad.mapapp.view.orders.adapter.ProductAdapter
@@ -95,7 +96,7 @@ class CreateOrder : AppCompatActivity(), ProductAdapter.OnProductClickListener, 
         val client = httpClient.build()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://clincia.000webhostapp.com/api/")
+            .baseUrl(OrderApi.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
@@ -173,7 +174,7 @@ class CreateOrder : AppCompatActivity(), ProductAdapter.OnProductClickListener, 
         val client = httpClient.build()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://clincia.000webhostapp.com/api/")
+            .baseUrl(OrderApi.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
@@ -268,7 +269,7 @@ class CreateOrder : AppCompatActivity(), ProductAdapter.OnProductClickListener, 
 
         // Crear una instancia de Retrofit
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://clincia.000webhostapp.com/api/") // Reemplaza "https://tu-backend.com/api/" con la URL real de tu backend
+            .baseUrl(OrderApi.BASE_URL) // Reemplaza "https://tu-backend.com/api/" con la URL real de tu backend
             .addConverterFactory(GsonConverterFactory.create()) // Usa GsonConverterFactory para convertir JSON a objetos Kotlin
             .client(client)
             .build()

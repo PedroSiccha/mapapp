@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object OrderApi {
-    private const val BASE_URL = "https://clincia.000webhostapp.com/api/"
+    val BASE_URL = "http://192.168.145.130/map_backend/public_html/api/"
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)

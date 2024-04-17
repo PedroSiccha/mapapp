@@ -26,6 +26,7 @@ import com.inforad.mapapp.R
 import com.inforad.mapapp.databinding.ActivityMapsBinding
 import com.inforad.mapapp.model.Location
 import com.inforad.mapapp.service.ApiService
+import com.inforad.mapapp.service.OrderApi
 import com.inforad.mapapp.view.orders.create.CreateOrder
 import com.inforad.mapapp.view.orders.list.ListOrderActivity
 import okhttp3.Interceptor
@@ -184,7 +185,7 @@ class MapsActivity : AppCompatActivity(), MapListener, GpsStatus.Listener, Callb
         httpClient.addInterceptor(interceptor)
         val client = httpClient.build()
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://clincia.000webhostapp.com/api/")
+            .baseUrl(OrderApi.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()

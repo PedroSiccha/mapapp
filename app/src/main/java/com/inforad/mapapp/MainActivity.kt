@@ -11,6 +11,7 @@ import com.inforad.mapapp.databinding.ActivityMainBinding
 import com.inforad.mapapp.model.LoginRequest
 import com.inforad.mapapp.model.LoginResponse
 import com.inforad.mapapp.service.ApiService
+import com.inforad.mapapp.service.OrderApi
 import com.inforad.mapapp.view.home.HomeActivity
 import com.inforad.mapapp.view.maps.MapsActivity
 import okhttp3.Interceptor
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         val client = httpClient.build()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://clincia.000webhostapp.com/api/")
+            .baseUrl(OrderApi.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
